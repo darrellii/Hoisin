@@ -1,0 +1,57 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+
+buildscript {
+
+    ext.kotlin_version = '1.3.61'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2"
+    implementation "org.json:json:20150729"
+    implementation 'io.arrow-kt:arrow-core:0.10.4'
+    implementation "com.squareup.okhttp3:okhttp:4.2.1"
+    implementation "com.google.code.gson:gson:2.8.6"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.github.Darrellii'
+            artifactId = 'hoisin'
+            version = '0.1,0'
+
+            from components.java
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version)
+    }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}

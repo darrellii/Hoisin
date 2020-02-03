@@ -66,3 +66,5 @@ In the meantime, if you have any questions, feel free to reach out to me on Twit
 Also the app I'm developing alongside this library is actually a project I'm developing live one [Twitch](https://twitch.com/darrellii), so feel free to drop me a follow there and help me along the way.
 
 
+## References 
+[- Libraries used in Hoisin](https://github.com/darrellii/Hoisin/blob/master/LIBRARIES.md)

@@ -12,9 +12,9 @@ import java.lang.reflect.Parameter
 import java.lang.reflect.Proxy
 
 class Hoisin(
-    private val baseUrl: String,
-    var paramsAreArrays: Boolean = false,
-    private val client: OkHttpClient = OkHttpClient()
+        private val baseUrl: String,
+        var paramsAreArrays: Boolean = false,
+        private val client: OkHttpClient = OkHttpClient()
 ) {
 
     private val gson: Gson = Gson()
@@ -30,8 +30,8 @@ class Hoisin(
         if (!clazz.isInterface) throw INTERFACE_REQUIRED_EXCEPTION
 
         return Proxy.newProxyInstance(
-            clazz.classLoader,
-            arrayOf(clazz)
+                clazz.classLoader,
+                arrayOf(clazz)
         ) { proxy, method, args: Array<Any?>? ->
 
             if (method.returnType != Call::class.java)
@@ -40,21 +40,21 @@ class Hoisin(
             Call(gson) {
                 // This is on IO Thread.
                 val jsonRaw: String = gson.toJson(
-                    if (paramsAreArrays) {
-                        HoisinRequestParamArray(
-                            jsonrpc = "2.0",
-                            id = "${callId++}",
-                            method = method.hoisinName,
-                            params = args?.toList()
-                        )
-                    } else {
-                        HoisinRequest(
-                            jsonrpc = "2.0",
-                            id = "${callId++}",
-                            method = method.hoisinName,
-                            params = method.parameters mapTo args
-                        )
-                    }
+                        if (paramsAreArrays) {
+                            HoisinRequestParamArray(
+                                    jsonrpc = "2.0",
+                                    id = "${callId++}",
+                                    method = method.hoisinName,
+                                    params = args?.toList()
+                            )
+                        } else {
+                            HoisinRequest(
+                                    jsonrpc = "2.0",
+                                    id = "${callId++}",
+                                    method = method.hoisinName,
+                                    params = method.parameters mapTo args
+                            )
+                        }
                 )
 
                 client hoisinCall (jsonRaw postTo baseUrl + clazz.hoisinName)
@@ -65,23 +65,23 @@ class Hoisin(
 
 private val <T> Class<T>.hoisinName: String
     get() = (annotations.filterIsInstance<Clazz>().firstOrNull()?.name ?: simpleName)
-        .toLowerCase().trim()
+            .toLowerCase().trim()
 
 private val Parameter.hoisinName: String
     get() = annotations.filterIsInstance<Param>().firstOrNull()?.name
-        ?.takeIf { it.isNotEmpty() && it.isNotBlank() }
-        ?: name
+            ?.takeIf { it.isNotEmpty() && it.isNotBlank() }
+            ?: name
 private val Method.hoisinName: String
     get() = annotations.filterIsInstance<Function>().firstOrNull()?.name
-        ?.takeIf { it.isNotEmpty() && it.isNotBlank() }
-        ?: name
+            ?.takeIf { it.isNotEmpty() && it.isNotBlank() }
+            ?: name
 
 private infix fun String.postTo(url: String) = Request.Builder()
-    .url(url)
-    .post(toRequestBody("application/json; charset=utf-8".toMediaType()))
-    .build()
+        .url(url)
+        .post(toRequestBody("application/json; charset=utf-8".toMediaType()))
+        .build()
 
 private infix fun OkHttpClient.hoisinCall(request: Request) = newCall(request).execute()
 
 private infix fun Array<Parameter>.mapTo(args: Array<Any?>?) =
-    args?.mapIndexed { i, arg -> this[i].hoisinName to arg }?.toMap()
+        args?.mapIndexed { i, arg -> this[i].hoisinName to arg }?.toMap()

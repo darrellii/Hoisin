@@ -6,7 +6,7 @@ internal sealed class HoisinResponse {
 }
 
 data class Error<DATA : Any> internal constructor(
-    val code: Int,
-    val message: String,
-    val data: DATA?
+        val code: Int,
+        val message: String,
+        val data: DATA?
 )
